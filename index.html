@@ -19,75 +19,26 @@
         body, html {
             width: 100%;
             height: 100%;
-            overflow: hidden;
             background-color: #131314;
             font-family: 'Segoe UI', Roboto, sans-serif;
             display: flex;
             flex-direction: column;
-        }
-        
-        /* Top Bar Modern untuk Tempat Tombol Instal */
-        .top-bar {
-            width: 100%;
-            background-color: #1e1f20;
-            padding: 10px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #303132;
-            z-index: 100;
-        }
-        .brand-title {
-            color: #e3e2e6;
-            font-size: 16px;
-            font-weight: 600;
-        }
-        
-        /* Desain Tombol Instal Keren */
-        .btn-install {
-            background-color: #a8c7fa;
-            color: #04305e;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            display: none; /* Sembunyi secara default, muncul jika didukung browser */
-            transition: background-color 0.2s;
-        }
-        .btn-install:hover {
-            background-color: #c2e7ff;
-        }
-
-        /* Bingkai Utama Pembungkus Google AI Studio */
-        .app-container {
-            flex: 1;
-            width: 100%;
-            border: none;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-
-        /* Animasi Splash Screen */
-        #splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #131314;
-            display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s;
         }
+
+        /* Desain Box Informasi yang Modern */
+        .card {
+            background-color: #1e1f20;
+            border: 1px solid #303132;
+            padding: 30px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 90%;
+            width: 360px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
         .logo-animation {
             width: 60px;
             height: 60px;
@@ -95,91 +46,104 @@
             border-top: 4px solid #a8c7fa;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
         }
-        .splash-text {
+
+        h2 {
             color: #e3e2e6;
-            margin-top: 20px;
-            font-size: 14px;
+            font-size: 20px;
+            margin-bottom: 10px;
+            font-weight: 600;
         }
+
+        p {
+            color: #c4c6d0;
+            font-size: 14px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        /* Tombol Aksi */
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.1s, background-color 0.2s;
+            text-decoration: none;
+            margin-bottom: 10px;
+        }
+
+        .btn-install {
+            background-color: #a8c7fa;
+            color: #04305e;
+            display: none; /* Muncul otomatis jika belum terinstal */
+        }
+
+        .btn-open {
+            background-color: #303132;
+            color: #c4c6d0;
+            border: 1px solid #444746;
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-        .fade-out {
-            opacity: 0;
-            visibility: hidden;
         }
     </style>
 </head>
 <body>
 
-    <div id="splash-screen">
+    <div class="card">
         <div class="logo-animation"></div>
-        <div class="splash-text">Memuat Lensa AI Pro...</div>
-    </div>
-
-    <div class="top-bar" id="app-bar">
-        <div class="brand-title">Lensa AI Pro</div>
-        <button class="btn-install" id="install-button">Instal Aplikasi</button>
-    </div>
-
-    <div class="app-container">
-        <iframe src="https://aistudio.google.com/apps/c3694fc4-79b8-4fd2-9cae-ce09683c876f?fullscreenApplet=true" allow="camera; microphone; geolocation"></iframe>
+        <h2>Lensa AI Pro</h2>
+        <p>Platform AI khusus foto produk UMKM. Jalankan aplikasi untuk memulai kreasi tanpa batas.</p>
+        
+        <button class="btn btn-install" id="install-button">Instal Aplikasi di HP</button>
+        
+        <a href="https://aistudio.google.com/apps/c3694fc4-79b8-4fd2-9cae-ce09683c876f?fullscreenApplet=true" class="btn btn-open" id="open-button">Buka Google AI Studio</a>
     </div>
 
     <script>
-        // 1. Registrasi Service Worker
+        const targetUrl = "https://aistudio.google.com/apps/c3694fc4-79b8-4fd2-9cae-ce09683c876f?fullscreenApplet=true";
+
+        // 1. Registrasi Service Worker PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('Service Worker aman terdaftar!'));
+                navigator.serviceWorker.register('sw.js');
             });
         }
 
-        // 2. Menghilangkan Splash Screen setelah halaman siap
-        window.addEventListener('load', () => {
-            const splash = document.getElementById('splash-screen');
-            setTimeout(() => { splash.classList.add('fade-out'); }, 1000);
-        });
+        // 2. DETEKSI MODE: Jika user membuka lewat ikon HP yang sudah terinstal (Standalone)
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            // Langsung lempar ke Google AI Studio secara instan tanpa lewat halaman ini lagi mase!
+            window.location.href = targetUrl;
+        }
 
-        // 3. LOGIKA TOMBOL INSTAL KUSTOM
+        // 3. LOGIKA TOMBOL INSTAL DI CHROME HP
         let deferredPrompt;
         const installButton = document.getElementById('install-button');
-        const appBar = document.getElementById('top-bar');
 
-        // Menangkap event "siap instal" dari Google Chrome
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Cegah Chrome memunculkan mini-infobar bawaan di bawah layar
             e.preventDefault();
-            // Simpan event-nya agar bisa dieksekusi saat tombol diklik
             deferredPrompt = e;
-            // Tampilkan tombol instal kustom milik kita di Top Bar
+            // Tampilkan tombol instal karena user membuka via browser biasa
             installButton.style.display = 'block';
         });
 
-        // Aksi ketika tombol "Instal Aplikasi" diklik oleh user
         installButton.addEventListener('click', async () => {
             if (!deferredPrompt) return;
-            
-            // Munculkan pop-up konfirmasi instalasi bawaan Chrome secara resmi
             deferredPrompt.prompt();
-            
-            // Tunggu respon dari user (apakah klik Instal atau Batal)
             const { outcome } = await deferredPrompt.userChoice;
-            console.log(`User memilih: ${outcome}`);
-            
-            // Bersihkan variabel karena prompt hanya bisa dipakai sekali
+            if (outcome === 'accepted') {
+                installButton.style.display = 'none';
+            }
             deferredPrompt = null;
-            // Sembunyikan kembali tombolnya setelah sukses diinstal
-            installButton.style.display = 'none';
         });
-
-        // Sembunyikan tombol secara otomatis jika aplikasi sudah terinstal di HP (Mode Standalone)
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            installButton.style.display = 'none';
-            // Opsional: Kamu juga bisa menyembunyikan seluruh Top Bar jika aplikasi sudah terinstal
-            // document.getElementById('app-bar').style.display = 'none';
-        }
     </script>
 </body>
 </html>
