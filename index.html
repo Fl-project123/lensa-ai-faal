@@ -11,150 +11,101 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body, html {
-            width: 100%;
-            height: 100%;
-            background-color: #131314;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html { width: 100%; height: 100%; background-color: #131314; font-family: 'Segoe UI', Roboto, sans-serif; overflow: hidden; }
 
+        /* Splash Screen dengan Ikon */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #131314; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
+            transition: opacity 0.4s ease, visibility 0.4s;
+        }
+        .splash-icon {
+            width: 120px; height: 120px; border-radius: 20%;
+            margin-bottom: 25px; animation: pulse 2s infinite ease-in-out;
+            box-shadow: 0 0 30px rgba(168, 199, 250, 0.2);
+        }
+        .loading-bar {
+            width: 150px; height: 3px; background: #303132; border-radius: 10px; overflow: hidden;
+        }
+        .loading-progress {
+            width: 40%; height: 100%; background: #a8c7fa;
+            animation: loading 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes loading { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }
+        .fade-out { opacity: 0; visibility: hidden; }
+
+        /* Card UI untuk Pengguna Baru */
+        .main-ui {
+            height: 100%; display: flex; justify-content: center; align-items: center; padding: 20px;
+        }
         .card {
-            background-color: #1e1f20;
-            border: 1px solid #303132;
-            padding: 30px;
-            border-radius: 24px;
-            text-align: center;
-            max-width: 90%;
-            width: 360px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            background-color: #1e1f20; border: 1px solid #303132; padding: 40px 30px;
+            border-radius: 28px; text-align: center; width: 100%; max-width: 380px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
         }
-
-        .logo-animation {
-            width: 60px;
-            height: 60px;
-            border: 4px solid #303132;
-            border-top: 4px solid #a8c7fa;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        h2 {
-            color: #e3e2e6;
-            font-size: 20px;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        p {
-            color: #c4c6d0;
-            font-size: 14px;
-            margin-bottom: 25px;
-            line-height: 1.5;
-        }
-        
+        h2 { color: #e3e2e6; margin-bottom: 12px; font-weight: 600; }
+        p { color: #c4c6d0; font-size: 14px; margin-bottom: 30px; line-height: 1.6; }
         .btn {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            border-radius: 25px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: background-color 0.2s;
-            text-decoration: none;
-            margin-bottom: 12px;
-            text-align: center;
+            display: block; width: 100%; padding: 14px; border-radius: 30px;
+            font-size: 15px; font-weight: 600; cursor: pointer; border: none;
+            text-decoration: none; margin-bottom: 15px; transition: all 0.2s;
         }
-
-        .btn-install {
-            background-color: #a8c7fa;
-            color: #04305e;
-            display: none; /* Muncul jika didukung */
-        }
-
-        .btn-open {
-            background-color: #303132;
-            color: #c4c6d0;
-            border: 1px solid #444746;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .btn-install { background-color: #a8c7fa; color: #04305e; display: none; }
+        .btn-open { background-color: #303132; color: #e3e2e6; border: 1px solid #444746; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="logo-animation"></div>
-        <h2>Lensa AI Pro</h2>
-        <p>Platform AI khusus foto produk UMKM. Jalankan aplikasi untuk memulai kreasi tanpa batas.</p>
-        
-        <button class="btn btn-install" id="install-button">Instal Aplikasi di HP</button>
-        
-        <button class="btn btn-open" id="open-button">Masuk ke Google AI Studio</button>
+    <div id="splash-screen">
+        <img src="maskable_app_icon.png" class="splash-icon" alt="Lensa AI Icon">
+        <div class="loading-bar"><div class="loading-progress"></div></div>
+    </div>
+
+    <div class="main-ui">
+        <div class="card">
+            <h2>Lensa AI Pro</h2>
+            <p>Optimalkan foto produk UMKM kamu dengan kecerdasan buatan. Klik tombol di bawah untuk memasang aplikasi.</p>
+            <button class="btn btn-install" id="install-button">Instal Aplikasi Lensa</button>
+            <button class="btn btn-open" id="open-button">Buka Studio AI</button>
+        </div>
     </div>
 
     <script>
         const targetUrl = "https://aistudio.google.com/apps/c3694fc4-79b8-4fd2-9cae-ce09683c876f?fullscreenApplet=true";
 
-        // 1. Daftarkan Service Worker
-        if ('serviceWorker' in navigator) {
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); }); }
+
+        function goDirect() { window.top.location.href = targetUrl; }
+
+        // OTOMATIS: Jika dibuka dari ikon HP, langsung lempar tanpa tanya!
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+            goDirect();
+        } else {
+            // Sembunyikan Splash Screen setelah 2 detik jika di browser biasa
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js');
+                setTimeout(() => { document.getElementById('splash-screen').classList.add('fade-out'); }, 2000);
             });
         }
 
-        // 2. FUNGSI UTAMA BYPASS: Memaksa window paling atas untuk berpindah alamat
-        function lompatKeStudio() {
-            if (window.top) {
-                window.top.location.href = targetUrl;
-            } else {
-                window.location.replace(targetUrl);
-            }
-        }
-
-        // 3. DETEKSI MODE STANDALONE (Jika dibuka dari ikon aplikasi HP yang sudah terinstal)
-        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-            lompatKeStudio();
-        }
-
-        // Aksi jika tombol "Masuk ke Google AI Studio" manual diklik
-        document.getElementById('open-button').addEventListener('click', () => {
-            lompatKeStudio();
-        });
-
-        // 4. LOGIKA TOMBOL INSTALASI PWA
         let deferredPrompt;
-        const installButton = document.getElementById('install-button');
-
+        const installBtn = document.getElementById('install-button');
         window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installButton.style.display = 'block';
+            e.preventDefault(); deferredPrompt = e;
+            installBtn.style.display = 'block';
         });
 
-        installButton.addEventListener('click', async () => {
+        installBtn.addEventListener('click', async () => {
             if (!deferredPrompt) return;
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                installButton.style.display = 'none';
-            }
+            if (outcome === 'accepted') installBtn.style.display = 'none';
             deferredPrompt = null;
         });
+
+        document.getElementById('open-button').addEventListener('click', goDirect);
     </script>
 </body>
 </html>
